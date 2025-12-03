@@ -20,5 +20,5 @@ locals {
 }
 
 output "wynik" {
-  value = lookup(local.dzialania,var.sign)
+  value = lookup(local.dzialania,var.sign,"błąd inny")
 }
