@@ -1,24 +1,28 @@
-variable "a" {
-  type = number
-}
-
-variable "b" {
-  type = number
-}
-
-variable "sign" {
-  type = string
-}
-
-locals {
-  dzialania = {
-   "+" = var.a + var.b
-   "-" = var.a - var.b
-   "*" = var.a * var.b
-   "/" = var.b == 0 ? "Błąd" : var.a / var.b
+terraform {
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "6.25.0"
+    }
   }
 }
+ 
+provider "aws" {
+  # Configuration options
 
-output "wynik" {
-  value = lookup(local.dzialania,var.sign,"błąd inny")
+}
+
+resource "aws_s3_bucket" "my-bucket" {
+  bucket_prefix = "awsninja11-"
+}
+
+output "bucket_name" {
+  value = aws_s3_bucket.my-bucket.bucket
+}
+
+resource "aws_s3_object" "object" {
+  for_each = fileset(path.module, "messages/*")
+  bucket = aws_s3_bucket.my-bucket.bucket
+  key = basename(each.key)
+  source = each.key
 }
